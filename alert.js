@@ -50,7 +50,7 @@ class AlertDialog {
 
     async _createDialogFrame() {
         let frame = document.createElement("iframe");
-        frame.src = "https://www.google.com";
+        frame.src = "\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd\ufffd";
         frame.setAttribute("allowFullscreen", "true");
         frame.setAttribute("allowtransparency", "true");
         frame.style.position = "absolute";
