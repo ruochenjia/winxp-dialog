@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Alert</title>
+		<style type="text/css">
+* {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	position: absolute;
+	display: block;
+	width: 100%;
+	height: 100%;
+	font-size: 14px;
+	font-family: sans-serif;
+	font-weight: 500;
+	background: transparent;
+}
+
+#dialog-outer-container {
+	position: relative;
+	display: table;
+	width: fit-content;
+	height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#dialog-inner-container {
+	position: relative;
+	display: table-cell;
+	vertical-align: middle;
+	margin-left: auto;
+	margin-right: auto;
+	height: fit-content;
+	width: fit-content;
+}
+
+#dialog {
+	position: relative;
+	display: block;
+	height: fit-content;
+	width: 256px;
+}
+
+#dialog-header {
+	position: relative;
+	display: block;
+	height: fit-content;
+	width: 100%;
+}
+
+#dialog-header-leftbg {
+	position: absolute;
+	display: block;
+	height: 32px;
+	width: 32px;
+	left: 0px;
+	top: 0px;
+	background-image: url("dialog_tb_left.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+#dialog-header-rightbg {
+	position: absolute;
+	display: block;
+	height: 32px;
+	width: 32px;
+	right: 0px;
+	top: 0px;
+	background-image: url("dialog_tb_right3.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+
+#dialog-header-rightbg:active, #dialog-header-rightbg[disabled] {
+	background-image: url("dialog_tb_right2.png");
+}
+
+#dialog-title {
+	position: relative;
+	display: block;
+	height: 32px;
+	width: calc(100% - 40px);
+	margin-left: 8px;
+	margin-right: 32px;
+	line-height: 32px;
+	text-align: left;
+	font-size: 18px;
+	font-weight: 700;
+	text-overflow: ellipsis;
+	color: white;
+	background-image: url("dialog_tb.png");
+	background-repeat: repeat-x;
+	background-size: contain;
+}
+
+#dialog-body {
+	position: relative;
+	display: block;
+	height: fit-content;
+	width: 100%;
+	padding: 5px;
+	border-style: solid;
+	border-width: 3px;
+	border-color: #004de3;
+	border-top: none;
+	background-color: #ece9d8;
+	box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+#dialog-content {
+	position: relative;
+	display: flex;
+	height: fit-content;
+	width: 100%;
+	min-height: 64px;
+}
+
+#dialog-icon {
+	position: relative;
+	display: block;
+	height: 34px;
+	width: 34px;
+	margin-left: 5px;
+	margin-right: 10px;
+}
+
+#dialog-message {
+	position: relative;
+	display: block;
+	height: fit-content;
+	width: calc(100% - 50px);
+	color: #000000;
+	font-size: 12px;
+	font-weight: 400;
+}
+
+#dialog-button-bar {
+	position: relative;
+	display: flex;
+	height: fit-content;
+	width: fit-content;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.dialog-button {
+	position: relative;
+	height: fit-content;
+	width: fit-content;
+	padding: 5px;
+	margin-left: 10px;
+	margin-right: 10px;
+	color: #000000;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #000000;
+}
+
+.dialog-button[disabled] {
+	color: #808080;
+	border-color: #808080;
+}
+
+.dialog-button-text {
+	position: relative;
+	height: fit-content;
+	width: fit-content;
+	padding-left: 15px;
+	padding-right: 15px;
+	font-weight: 400;
+	font-size: 14px;
+	text-align: center;
+}
+
+.dialog-button-text:active {
+	outline-style: dotted;
+	outline-color: #000000;
+	outline-width: 1px;
+}
+		</style>
+	</head>
+	<body>
+		<lock id="s-lock" style="display: none;"></lock>
+		<div id="dialog-outer-container">
+			<div id="dialog-inner-container">
+				<div id="dialog">
+					<div id="dialog-header">
+						<div id="dialog-header-leftbg"></div>
+						<div id="dialog-title"></div>
+						<div id="dialog-header-rightbg"></div>
+					</div>
+					<div id="dialog-body">
+						<div id="dialog-content">
+							<img id="dialog-icon" src="error.png" />
+							<div id="dialog-message"></div>
+						</div>
+						<div id="dialog-button-bar"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
