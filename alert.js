@@ -13,40 +13,6 @@ async function loadDoc(url) {
     else throw new Error(`An error has occured: ${response.status}`);
 }
 
-function randInt(min = 0, max = 100) {
-    let val = Math.random() * max;
-    while (val < min)
-        val = Math.random() * max;
-    return Math.round(val);
-}
-
-function makeSound(file, rate = 1, detune = 0, loop = false) {
-    // set default values to avoid crashing on undefined values
-    if (rate == null) rate = 1;
-    if (detune == null) detune = 0;
-    if (loop == null) loop = false;
-
-    let ctx = new window.AudioContext();
-    let src = ctx.createBufferSource();
-    let r = new XMLHttpRequest();
-    r.open('GET', file, true);
-    r.responseType = 'arraybuffer';
-    r.onload = () => {
-        let data = r.response;
-        ctx.decodeAudioData(data, (buffer) => {
-            src.buffer = buffer;
-            src.playbackRate.value = rate;
-            src.detune.value = detune;
-            src.loop = loop;
-            src.connect(ctx.destination);
-        },
-        (e) => console.log("Error with decoding audio data" + e.error));
-    }
-    r.send();
-    src.play = src.start;
-    src.play();
-}
-
 class AlertDialog {
     constructor(prop = {
         title: "",
@@ -111,7 +77,10 @@ class AlertDialog {
     }
 
     _playSound() {
-        makeSound(this._absUrl(this.prop.sound));
+        let audio = new Audio(this.prop.sound);
+        audio.loop = false;
+        audio.playbackRate = 1;
+        audio.play();
     }
 
     async _run() {
