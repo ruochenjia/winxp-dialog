@@ -66,7 +66,9 @@ class AlertDialog {
 
         let swin = frame.contentWindow;
         let sdoc = frame.contentDocument;
-        sdoc.write(await loadDoc(this._absUrl("alert.html")));
+        let doc = await loadDoc(this._absUrl("alert.html"));
+        console.log(doc);
+        sdoc.write(doc);
 
         let slock = sdoc.getElementById("s-lock")
         slock.setAttribute("locked", "true");
