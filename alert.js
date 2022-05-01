@@ -135,6 +135,6 @@ class AlertDialog {
 }
 
 function alert(message, title = "Alert", icon = "warning.png") {
-    let dialog = new AlertDialog({title: title, message: message, icon: icon, buttons: [new DialogButton("Close", ()=>dialog.close())], width: 512});
+    let dialog = new AlertDialog({title: title, message: message, icon: icon, buttons: [new DialogButton("Close", ()=>dialog.close())]});
     dialog.show();
 }
