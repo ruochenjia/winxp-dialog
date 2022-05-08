@@ -73,40 +73,41 @@ class AlertDialog {
         request.responseType = "text";
         request.open("GET", this._absUrl("alert.html"), true);
         request.onload = (e) => {
-            let swin = frame.contentWindow;
-            let sdoc = frame.contentDocument;
-            swin.stop();
-            sdoc.write(request.responseText);
+            frame.srcdoc = request.responseText;
+            frame.onload = (e) => {
+                let swin = frame.contentWindow;
+                let sdoc = frame.contentDocument;
 
-            let slock = sdoc.getElementById("s-lock")
-            slock.setAttribute("locked", "true");
-            Object.freeze(swin.location);
-            Object.freeze(sdoc.slock);
+                let slock = sdoc.getElementById("s-lock")
+                slock.setAttribute("locked", "true");
+                Object.freeze(swin.location);
+                Object.freeze(sdoc.slock);
 
-            let closeButton = sdoc.getElementById("dialog-header-rightbg");
-            let buttonBar = sdoc.getElementById("dialog-button-bar");
-            sdoc.getElementById("dialog").style.width = this.prop.width + "px";
-            sdoc.getElementById("dialog-title").innerHTML = this.prop.title;
-            sdoc.getElementById("dialog-message").innerHTML = this.prop.message;
-            sdoc.getElementById("dialog-icon").src = this._absUrl(this.prop.icon);
-            if (this.prop.disableCloseButton)
-                closeButton.setAttribute("disabled", "true");
-            else closeButton.onclick = (e) => this.dismiss();
+                let closeButton = sdoc.getElementById("dialog-header-rightbg");
+                let buttonBar = sdoc.getElementById("dialog-button-bar");
+                sdoc.getElementById("dialog").style.width = this.prop.width + "px";
+                sdoc.getElementById("dialog-title").innerHTML = this.prop.title;
+                sdoc.getElementById("dialog-message").innerHTML = this.prop.message;
+                sdoc.getElementById("dialog-icon").src = this._absUrl(this.prop.icon);
+                if (this.prop.disableCloseButton)
+                    closeButton.setAttribute("disabled", "true");
+                else closeButton.onclick = (e) => this.dismiss();
 
-            this.prop.buttons.forEach((e, i) => {
-                let button = document.createElement("div");
-                let buttonText = document.createElement("div");
-                button.className = "dialog-button";
-                buttonText.className = "dialog-button-text";
-                buttonText.innerHTML = e.text;
-                button.appendChild(buttonText);
-                if (e.disabled)
-                    button.setAttribute("disabled", "true");
-                else button.onclick = e.onclick;
-                buttonBar.appendChild(button);
-            });
+                this.prop.buttons.forEach((e, i) => {
+                    let button = document.createElement("div");
+                    let buttonText = document.createElement("div");
+                    button.className = "dialog-button";
+                    buttonText.className = "dialog-button-text";
+                    buttonText.innerHTML = e.text;
+                    button.appendChild(buttonText);
+                    if (e.disabled)
+                        button.setAttribute("disabled", "true");
+                    else button.onclick = e.onclick;
+                    buttonBar.appendChild(button);
+                });
 
-            this._playSound();
+                this._playSound();
+            };
         };
         request.send();
         this.frame = frame;
