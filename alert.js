@@ -29,18 +29,20 @@ class AlertDialog {
         this.prop = prop;
     }
 
-    _absUrl(target = "") {
-        if (target.startsWith("https://") || target.startsWith("http://"))
-            return target; // already a absolute url
-        
-        if (target == "" || target == null)
-            return "about:blank";
-        
+    _baseUrl() {
         let src = new Error().stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)[0].substring(1);
         let base = new URL(src + "/..").href;
         if (!base.endsWith("/"))
             base += "/";
-        return new URL(base + target).href;
+        return base;
+    }
+
+    _absUrl(target) {
+        if (target.startsWith("https://") || target.startsWith("http://"))
+            return target; // already a absolute url
+        if (target == null || target.length == 0)
+            return "about:blank";
+        return new URL(this._baseUrl() + target).href;
     }
 
     _playSound() {
@@ -73,7 +75,7 @@ class AlertDialog {
         request.responseType = "text";
         request.open("GET", this._absUrl("alert.html"), true);
         request.onload = (e) => {
-            frame.srcdoc = request.responseText;
+            frame.srcdoc = request.responseText.replace(/\$baseurl/g, this._baseUrl());
             frame.onload = (e) => {
                 let swin = frame.contentWindow;
                 let sdoc = frame.contentDocument;
