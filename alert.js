@@ -1,143 +1,130 @@
+"use strict";
+
 class DialogButton {
-    constructor(text, onclick, disabled = false) {
-        this.text = text;
-        this.onclick = onclick;
-        this.disabled = disabled;
-    }
+	constructor(text, onclick, disabled = false) {
+		this.text = text;
+		this.onclick = onclick;
+		this.disabled = disabled;
+	}
 }
 
 class AlertDialog {
-    constructor(prop = {
-        title: "",
-        message: "",
-        buttons: [],
-        disableCloseButton: false,
-        icon: "error.png",
-        sound: "alert.wav",
-        width: 256
-    }) {
-        // set default values to avoid crashing on undefined values
-        if (prop == null) prop = {};
-        if (prop.title == null) prop.title = "";
-        if (prop.message == null) prop.message = "";
-        if (prop.buttons == null) prop.buttons = [];
-        if (prop.disableCloseButton == null) prop.disableCloseButton = false;
-        if (prop.icon == null) prop.icon = "error.png";
-        if (prop.sound == null) prop.sound = "alert.wav";
-        if (prop.width == null) prop.width = 256;
+	constructor(prop) {
+		this.prop = this._defProp(prop);
+	}
 
-        this.prop = prop;
-    }
+	_defProp(prop) {
+		if (prop == null) prop = {};
+		if (prop.title == null) prop.title = "";
+		if (prop.message == null) prop.message = "";
+		if (prop.buttons == null) prop.buttons = [];
+		if (prop.disableCloseButton == null) prop.disableCloseButton = false;
+		if (prop.icon == null) prop.icon = "images/error.png";
+		if (prop.sound == null) prop.sound = "sounds/critical-stop.wav";
+		if (prop.width == null) prop.width = 256;
 
-    _baseUrl() {
-        let src = new Error().stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)[0].substring(1);
-        let base = new URL(src + "/..").href;
-        if (!base.endsWith("/"))
-            base += "/";
-        return base;
-    }
+		return prop;
+	}
 
-    _absUrl(target) {
-        if (target.startsWith("https://") || target.startsWith("http://"))
-            return target; // already a absolute url
-        if (target == null || target.length == 0)
-            return "about:blank";
-        return new URL(this._baseUrl() + target).href;
-    }
+	_baseUrl() {
+		let src = new Error().stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)[0].substring(1);
+		let base = new URL(src + "/..").href;
+		if (!base.endsWith("/"))
+			base += "/";
+		return base;
+	}
 
-    _playSound() {
-        let audio = new Audio(this._absUrl(this.prop.sound));
-        audio.loop = false;
-        audio.playbackRate = 1;
-        audio.play();
-    }
+	_absUrl(target) {
+		if (target.startsWith("https://") || target.startsWith("http://"))
+			return target; // already a absolute url
+		if (target == null || target.length == 0)
+			return "about:blank";
+		return new URL(this._baseUrl() + target).href;
+	}
 
-    _run() {
-        // create frame
-        let frame = document.createElement("iframe");
-        frame.setAttribute("allowFullscreen", "true");
-        frame.setAttribute("allowtransparency", "true");
-        frame.setAttribute("scrolling", "no");
-        frame.setAttribute("loading", "lazy");
-        frame.style.position = "absolute";
-        frame.style.display = "block";
-        frame.style.width = "100%";
-        frame.style.height = "100%";
-        frame.style.top = "0px";
-        frame.style.left = "0px";
-        frame.style.right = "0px";
-        frame.style.bottom = "0px";
-        frame.style.border = "none";
-        document.body.appendChild(frame);
+	_playSound() {
+		let audio = new Audio(this._absUrl(this.prop.sound));
+		audio.loop = false;
+		audio.playbackRate = 1;
+		audio.play();
+	}
 
-        // load required document
-        let request = new XMLHttpRequest();
-        request.responseType = "text";
-        request.open("GET", this._absUrl("alert.html"), true);
-        request.onload = (e) => {
-            frame.srcdoc = request.responseText.replace(/\$baseurl/g, this._baseUrl());
-            frame.onload = (e) => {
-                let swin = frame.contentWindow;
-                let sdoc = frame.contentDocument;
+	_run() {
+		// create frame
+		let frame = document.createElement("iframe");
+		frame.setAttribute("allowFullscreen", "true");
+		frame.setAttribute("allowtransparency", "true");
+		frame.setAttribute("scrolling", "no");
+		frame.setAttribute("loading", "lazy");
+		frame.setAttribute("style", "position:absolute;display:block;width:100%;height:100%;top:0px;left:0px;right:0px;bottom:0px;border:none;");
+		frame.setAttribute("width", "1024");
+		frame.setAttribute("height", "768");
+		document.body.appendChild(frame);
 
-                let slock = sdoc.getElementById("s-lock")
-                slock.setAttribute("locked", "true");
-                Object.freeze(swin.location);
-                Object.freeze(sdoc.slock);
+		// load required document
+		let request = new XMLHttpRequest();
+		request.responseType = "text";
+		request.open("GET", this._absUrl("alert.html"), true);
+		request.onload = () => {
+			frame.onload = () => {
+				let swin = frame.contentWindow;
+				let sdoc = frame.contentDocument;
 
-                let closeButton = sdoc.getElementById("dialog-header-rightbg");
-                let buttonBar = sdoc.getElementById("dialog-button-bar");
-                sdoc.getElementById("dialog").style.width = this.prop.width + "px";
-                sdoc.getElementById("dialog-title").innerHTML = this.prop.title;
-                sdoc.getElementById("dialog-message").innerHTML = this.prop.message;
-                sdoc.getElementById("dialog-icon").src = this._absUrl(this.prop.icon);
-                if (this.prop.disableCloseButton)
-                    closeButton.setAttribute("disabled", "true");
-                else closeButton.onclick = (e) => this.dismiss();
+				sdoc.getElementById("dialog").setAttribute("style", "width:" + this.prop.width + "px;");
+				sdoc.getElementById("dialog-title").innerHTML = this.prop.title;
+				sdoc.getElementById("dialog-message").innerHTML = this.prop.message;
+				sdoc.getElementById("dialog-icon").setAttribute("src", this._absUrl(this.prop.icon));
 
-                this.prop.buttons.forEach((e, i) => {
-                    let button = document.createElement("div");
-                    let buttonText = document.createElement("div");
-                    button.className = "dialog-button";
-                    buttonText.className = "dialog-button-text";
-                    buttonText.innerHTML = e.text;
-                    button.appendChild(buttonText);
-                    if (e.disabled)
-                        button.setAttribute("disabled", "true");
-                    else button.onclick = e.onclick;
-                    buttonBar.appendChild(button);
-                });
+				let closeButton = sdoc.getElementById("dialog-header-rightbg");
+				let buttonBar = sdoc.getElementById("dialog-button-bar");
+				if (this.prop.disableCloseButton)
+					closeButton.setAttribute("disabled", "true");
+				else closeButton.onclick = () => this.dismiss();
 
-                this._playSound();
-            };
-        };
-        request.send();
-        this.frame = frame;
-    }
+				this.prop.buttons.forEach((e) => {
+					let button = document.createElement("div");
+					let buttonText = document.createElement("div");
+					button.setAttribute("class", "dialog-button");
+					buttonText.setAttribute("class", "dialog-button-text");
+					buttonText.innerHTML = e.text;
+					button.appendChild(buttonText);
+					if (e.disabled)
+						button.setAttribute("disabled", "true");
+					else button.onclick = e.onclick;
+					buttonBar.appendChild(button);
+				});
 
-    _close() {
-        if (this.frame != null)
-            this.frame.remove();
-    }
+				this._playSound();
+			};
+			frame.setAttribute("srcdoc", request.responseText.replace(/\$baseurl/g, this._baseUrl()));
+		};
+		request.send();
+		this.frame = frame;
+	}
 
-    show() {
-        this._run();
-    }
+	_close() {
+		if (this.frame != null)
+			this.frame.remove();
+	}
 
-    alert() {
-        this._run();
-    }
+	show() {
+		this._run();
+	}
 
-    close() {
-        this._close();
-    }
+	alert() {
+		this._run();
+	}
 
-    dismiss() {
-        this._close();
-    }
+	close() {
+		this._close();
+	}
+
+	dismiss() {
+		this._close();
+	}
 }
 
-function alert(message, title = "Alert", icon = "warning.png") {
-    let dialog = new AlertDialog({title: title, message: message, icon: icon, buttons: [new DialogButton("Close", ()=>dialog.close())]});
-    dialog.show();
+function alert(message, title = "Alert", icon = "images/warning.png") {
+	let dialog = new AlertDialog({title: title, message: message, icon: icon, buttons: [new DialogButton("Close", ()=>dialog.close())]});
+	dialog.show();
 }
