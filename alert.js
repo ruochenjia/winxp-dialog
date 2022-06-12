@@ -1,5 +1,8 @@
 "use strict";
 
+let _root = new URL(document.currentScript.src);
+_root.pathname = "/";
+
 class DialogButton {
 	constructor(text, onclick, disabled = false) {
 		this.text = text;
@@ -26,17 +29,11 @@ class AlertDialog {
 		return prop;
 	}
 
-	_rootUrl() {
-		let scriptSrc = new URL(document.currentScript.src);
-		scriptSrc.pathname = "/";
-		return scriptSrc.href;
-	}
-
 	_absUrl(url) {
 		if (url == null || url.length == 0)
 			return "about:blank";
 
-		return new URL(url, this._rootUrl()).href;
+		return new URL(url, _root).href;
 	}
 
 	_playSound() {
@@ -93,7 +90,7 @@ class AlertDialog {
 
 				this._playSound();
 			};
-			frame.setAttribute("srcdoc", request.responseText.replace(/\$baseurl/g, this._rootUrl()));
+			frame.setAttribute("srcdoc", request.responseText.replace(/\$baseurl/g, _root));
 		};
 		request.send();
 		this.frame = frame;
