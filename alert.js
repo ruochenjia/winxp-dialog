@@ -1,7 +1,13 @@
 "use strict";
 
-let _root = new URL(document.currentScript.src);
-_root.pathname = "/";
+
+let _root = (() => {
+	let src = new URL(document.currentScript.src);
+	let path = src.pathname;
+	path = path.substring(0, path.lastIndexOf("/") + 1);
+	src.pathname = path;
+	return src;
+})();
 
 class DialogButton {
 	constructor(text, onclick, disabled = false) {
