@@ -26,20 +26,17 @@ class AlertDialog {
 		return prop;
 	}
 
-	_baseUrl() {
-		let src = new Error().stack.match(/([^ \n])*([a-z]*:\/\/\/?)*?[a-z0-9\/\\]*\.js/ig)[0].substring(1);
-		let base = new URL(src + "/..").href;
-		if (!base.endsWith("/"))
-			base += "/";
-		return base;
+	_rootUrl() {
+		let scriptSrc = new URL(document.currentScript.src);
+		scriptSrc.pathname = "/";
+		return scriptSrc.href;
 	}
 
-	_absUrl(target) {
-		if (target.startsWith("https://") || target.startsWith("http://"))
-			return target; // already a absolute url
-		if (target == null || target.length == 0)
+	_absUrl(url) {
+		if (url == null || url.length == 0)
 			return "about:blank";
-		return new URL(this._baseUrl() + target).href;
+
+		return new URL(url, this._rootUrl()).href;
 	}
 
 	_playSound() {
@@ -96,7 +93,7 @@ class AlertDialog {
 
 				this._playSound();
 			};
-			frame.setAttribute("srcdoc", request.responseText.replace(/\$baseurl/g, this._baseUrl()));
+			frame.setAttribute("srcdoc", request.responseText.replace(/\$baseurl/g, this._rootUrl()));
 		};
 		request.send();
 		this.frame = frame;
